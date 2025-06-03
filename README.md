@@ -23,3 +23,6 @@ run.sh
 
 To configure parameters for the benchmark, all variables are configured in
 compile time in `include/params.hpp`.
+
+# Fork info
+This for evaluates performance for some HPC systems. Only MPCDF Vera for now. CPU backend: 2x36 Intel cores, GPU backend: 40GB A100

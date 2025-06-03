@@ -6,6 +6,7 @@ CGAL_COMPILER             ?= g++
 QHULL_COMPILER            ?= g++
 
 BUILD_DIR          := cmake/build
+NTHREADS_BUILD ?= 1
 
 .PHONY: all configure build clean
 
@@ -14,14 +15,14 @@ all: configure build
 configure:
 	mkdir -p $(BUILD_DIR)
 	cmake -S . -B $(BUILD_DIR) 				              \
-	  -DVOTESS_CPU_COMPILER=$(shell command -v ${VOTESS_CPU_COMPILER})    \
-	  -DVOTESS_GPU_COMPILER=$(shell command -v ${VOTESS_GPU_COMPILER})    \
-	  -DVOROPP_COMPILER=$(shell command -v ${VOROPP_COMPILER})            \
-	  -DCGAL_COMPILER=$(shell command -v ${CGAL_COMPILER})                \
-	  -DQHULL_COMPILER=$(shell command -v ${QHULL_COMPILER})
+	  -DVOTESS_CPU_COMPILER=$(VOTESS_CPU_COMPILER)    \
+	  -DVOTESS_GPU_COMPILER=$(VOTESS_GPU_COMPILER)    \
+	  -DVOROPP_COMPILER=$(VOROPP_COMPILER)            \
+	  -DCGAL_COMPILER=$(CGAL_COMPILER)                \
+	  -DQHULL_COMPILER=$(QHULL_COMPILER)
 
 build:
-	cmake --build $(BUILD_DIR) --target build_all
+	cmake --build $(BUILD_DIR) --target build_all -j $(NTHREADS_BUILD)
 
 clean:
 	rm -rf bin/*
