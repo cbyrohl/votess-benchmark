@@ -5,9 +5,12 @@
 #include <CGAL/Delaunay_triangulation_3.h>
 #include <CGAL/Bbox_3.h>
 
+#include <tbb/global_control.h>
+
 #include <algorithm>
 #include <iostream>
 #include <fstream>
+#include <thread>
 
 #include <json.hpp>
 using nlohmann::json;
@@ -28,10 +31,14 @@ typedef CGAL::Triangulation_data_structure_3<Vb,Cb>                      Tds;
 typedef CGAL::Delaunay_triangulation_3<K,Tds>                   Delaunay;
 typedef Delaunay::Point                                         Point;
 
-
 int
 main(void)
 {
+
+        tbb::global_control gc(
+                tbb::global_control::max_allowed_parallelism,
+                std::thread::hardware_concurrency()
+        );
 
         std::vector<I> N;
 
@@ -52,7 +59,7 @@ main(void)
 
 
         #ifndef CGAL_LINKED_WITH_TBB
-        #warning "CGAL NOT PARALLELIZED"
+        #error "CGAL NOT PARALLELIZED"
         std::cout << "WARNING: CGAL NOT PARALLELIZED" << std::endl;
         #endif
 
@@ -92,11 +99,15 @@ main(void)
                                 minz = std::min(minz, P.z());
                                 maxz = std::max(maxz, P.z());
                         }
+                        
                         CGAL::Bbox_3 bbox(minx, miny, minz, maxx, maxy, maxz);
                         Delaunay::Lock_data_structure lock_ds(bbox, 50);
                         Delaunay dt(pts.begin(), pts.end(), &lock_ds);
+
                         #else
+
                         Delaunay dt(pts.begin(), pts.end());
+
                         #endif
 
                 }
